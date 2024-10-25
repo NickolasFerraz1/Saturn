@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturn</title>
+    <style>
+        /* Variáveis CSS para facilitar a manutenção */
+        :root {
+            --primary-color: #1e88e5; /* Cor do chat-box e de outros elementos */
+            --secondary-color: #42a5f5; /* Cor interna do chat-box */
+            --tertiary-color: #1c50a0; /* Cor dos balões do usuário */
+            --bot-color: #64b5f6; /* Cor dos balões do bot */
+            --background-gradient: linear-gradient(135deg, #0d47a1, #64b5f6); /* Gradiente de fundo */
+            --nav-gradient: linear-gradient(135deg, #1a3e8b, #266dca);
+            --text-color: #fff; /* Cor do texto */
+            --hover-color: #0a3573; /* Cor ao passar o mouse sobre elementos */
+            --border-radius: 20px;
+            --max-bubble-width: 60%;
+            --max-bubble-width-mobile: 80%;
+            --chat-box-height: 120px;
+            --min-textarea-height: 20px;
+        }
+
+        /* Estilos Gerais */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Barra de Navegação */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 40px;
+            background: var(--nav-gradient);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .menu-right {
+            display: flex;
+            align-items: center;
+            padding: 10px 30px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .menu-right a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        /* Conteúdo Principal */
+        .hero-content {
+            text-align: center;
+            margin-top: 80px; /* Espaço para evitar sobreposição com o navbar fixo */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hero-content img {
+            max-width: 100px; /* Responsividade da imagem */
+            max-height: 100px;
+            width: auto;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .hero-content h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+            color: #e3f2fd;
+            margin-bottom: 30px;
+        }
+
+        .suggestions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .suggestions .suggestion-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #bbdefb;
+            transition: background-color 0.3s ease;
+        }
+
+        .suggestions .suggestion-item:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Container do Chat */
+        .chat-box-container {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: var(--nav-gradient);
+            padding: 10px 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-box {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Reduzido para diminuir o espaço */
+            width: 90%;
+            max-width: 800px;
+            background-color: var(--primary-color);
+            padding: 5px 10px; /* Reduzido o padding para diminuir o espaço */
+            border-radius: 30px;
+            transition: height 0.2s ease-in-out;
+            overflow: hidden;
+        }
+
+        .chat-box textarea {
+            flex: 1;
+            padding: 10px;
+            height: var(--min-textarea-height);
+            max-height: var(--chat-box-height);
+            border: none;
+            border-radius: 20px;
+            background: var(--secondary-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            text-align: left;
+            outline: none;
+            overflow-y: auto;
+            resize: none;
+        }
+
+        .chat-box textarea::placeholder {
+            color: #bbdefb;
+        }
+
+        /* Estilo para a barra de rolagem do chatbox */
+        .chat-box textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box textarea::-webkit-scrollbar-thumb {
+            background: #0d47a1; /* Cor do polegar da barra de rolagem */
+            border-radius: 4px;
+        }
+
+        .chat-box textarea::-webkit-scrollbar-track {
+            background: transparent; /* Cor de fundo do track da barra de rolagem */
+            border-radius: 4px;
+        }
+
+        .chat-box button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px; /* Reduzido o padding */
+            border: none;
+            border-radius: 50%;
+            background-color: #0d47a1;
+            color: var(--text-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 30px; /* Reduzido o tamanho */
+            height: 30px; /* Reduzido o tamanho */
+        }
+
+        .chat-box button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .chat-box button i {
+            font-size: 1rem;
+        }
+
+        /* Botão de Microfone */
+        .chat-box button#mic-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem; /* Reduzido o tamanho */
+            margin-right: 5px; /* Reduzido o espaço */
+        }
+
+        .chat-box button#mic-btn:hover {
+            color: #bbdefb;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 100%;
+            position: fixed;
+            bottom: 50px;
+        }
+
+        footer p {
+            color: #e3f2fd;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hero-content h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-content p {
+                font-size: 0.9rem;
+            }
+
+            .chat-box {
+                width: 95%;
+            }
+
+            .menu-right {
+                padding: 8px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 1.2rem;
+            }
+
+            .hero-content p {
+                font-size: 0.8rem;
+            }
+
+            .suggestions {
+                gap: 10px;
+            }
+
+            .suggestions .suggestion-item {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .chat-box textarea {
+                font-size: 12px;
+            }
+
+            .chat-box button {
+                width: 25px; /* Ainda menor para dispositivos menores */
+                height: 25px;
+            }
+
+            footer p {
+                font-size: 10px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Barra de Navegação -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#">Sobre</a></li>
+            <!-- Removidos "Serviços" e "Contato" -->
+        </ul>
+        <div class="menu-right">
+            <img src="{{ url_for('static', filename='logo-b3-white.png') }}" alt="Logo Saturn" style="max-height: 40px;">
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="hero-content">
+        <img src="{{ url_for('static', filename='logo1.png') }}" alt="Imagem do Chat-bot">
+        <h1>Inicie sua Conversa</h1>
+        <p>Converse com nosso chat-bot e obtenha respostas instantâneas!</p>
+        <div class="suggestions">
+            <div class="suggestion-item">O que é rendimento?</div>
+            <div class="suggestion-item">Explore características de um fundo específico</div>
+            <div class="suggestion-item">Quais são os principais tipos de fundos?</div>
+            <!-- Você pode adicionar mais sugestões aqui -->
+        </div>
+    </div>
+
+    <!-- Container do Chatbox -->
+    <div class="chat-box-container">
+        <form action="/" method="POST" class="chat-box" id="chat-box">
+            <!-- Botão do microfone adicionado -->
+            <button type="button" id="mic-btn" aria-label="Enviar áudio">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <textarea id="chat-input" name="user_message" placeholder="Digite sua mensagem inicial..." required aria-label="Campo de mensagem"></textarea>
+            <button id="send-btn" type="submit" aria-label="Enviar mensagem"><i class="fas fa-arrow-up"></i></button>
+        </form>
+    </div>
+
+
+    <!-- Elemento para passar mensagem inicial -->
+    <div id="initial-message" data-message="{{ user_message | escape }}"></div>
+
+    <script>
+        const textarea = document.getElementById('chat-input');
+        const chatBox = document.getElementById('chat-box');
+        const sendButton = document.getElementById('send-btn');
+        const suggestionItems = document.querySelectorAll('.suggestion-item');
+
+        function adjustTextareaHeight() {
+            textarea.style.height = '10px';
+            if (textarea.scrollHeight > 10) {
+                let newHeight = Math.min(textarea.scrollHeight, 120);
+                textarea.style.height = `${newHeight}px`;
+                chatBox.style.height = `${newHeight + 30}px`;
+            } else {
+                chatBox.style.height = '10px';
+                textarea.style.height = '10px';
+            }
+        }
+
+        textarea.addEventListener('input', adjustTextareaHeight);
+
+        textarea.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendButton.click();
+            }
+        });
+
+        // Função para lidar com o clique nas sugestões e enviar para index2.html
+        suggestionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const suggestionText = item.textContent.trim();
+
+                if (suggestionText === "Explore características de um fundo específico") {
+                    // Enviar mensagem pré-programada
+                    const preProgrammedMessage = "Explore características de um fundo específico";
+
+                    // Redirecionar para index2.html com a mensagem pré-programada
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    //form.action = 'index2.html'; // Altere para a rota correta se necessário
+
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'user_message';
+                    input.value = preProgrammedMessage;
+
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    // Enviar a sugestão para index2.html sem mensagem pré-programada
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    //form.action = 'index2.html'; // Altere para a rota correta se necessário
+
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'user_message';
+                    input.value = suggestionText;
+
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
