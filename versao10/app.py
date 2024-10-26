@@ -50,6 +50,11 @@ def index():
         return redirect(url_for('conversa', message=user_message))
     return render_template('index.html')
 
+@app.route('/sobre', methods=['GET'])
+def sobre():
+    return render_template('index3.html')
+
+
 # Rota para o segundo HTML com a mensagem capturada
 @app.route('/conversa')
 def conversa():

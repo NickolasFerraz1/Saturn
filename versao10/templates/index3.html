@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Integrantes do Projeto</title>
+    <style>
+        /* Variáveis CSS para facilitar a manutenção */
+        :root {
+            --primary-color: #1e88e5; /* Cor do chat-box e de outros elementos */
+            --secondary-color: #42a5f5; /* Cor interna do chat-box */
+            --tertiary-color: #1c50a0; /* Cor dos balões do usuário */
+            --bot-color: #64b5f6; /* Cor dos balões do bot */
+            --background-gradient: linear-gradient(135deg, #0d47a1, #64b5f6); /* Gradiente de fundo */
+            --nav-gradient: linear-gradient(135deg, #1a3e8b, #266dca);
+            --text-color: #fff; /* Cor do texto */
+            --hover-color: #0a3573; /* Cor ao passar o mouse sobre elementos */
+            --border-radius: 20px;
+            --max-bubble-width: 60%;
+            --max-bubble-width-mobile: 80%;
+            --chat-box-height: 120px;
+            --min-textarea-height: 20px;
+        }
+
+        /* Estilos Gerais */
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Garantir que o gradiente cubra toda a página */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra de Navegação */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 40px;
+            background: var(--nav-gradient);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .menu-right {
+            display: flex;
+            align-items: center;
+            padding: 10px 30px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .menu-right a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        /* Conteúdo Principal */
+        .container {
+            max-width: 800px;
+            margin: 100px auto 0 auto; /* Ajustado para deixar espaço para a barra de navegação */
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .integrante {
+            background-color: rgba(255, 255, 255, 0.9); /* Fundo translúcido para destacar o conteúdo */
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .integrante h2 {
+            color: #003366;
+        }
+
+        .integrante p {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .linkedin {
+            margin-top: 10px;
+            display: inline-block;
+            background-color: #0077b5;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .linkedin:hover {
+            background-color: #005582;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-right {
+                padding: 8px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegação -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/sobre">Sobre</a></li>
+        </ul>
+        <div class="menu-right">
+            <img src="{{ url_for('static', filename='logo-b3-white.png') }}" alt="Logo Saturn" style="max-height: 40px;">
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <h1>Sobre os Integrantes</h1>
+
+        <div class="integrante">
+            <h2>Nome do Integrante 1</h2>
+            <p>Integrante 1 é responsável pela parte de desenvolvimento backend, com ampla experiência em APIs e integração de sistemas.</p>
+            <a href="https://www.linkedin.com/in/integrante1" class="linkedin" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="integrante">
+            <h2>Nome do Integrante 2</h2>
+            <p>Integrante 2 atua no frontend, com foco em design responsivo e experiência do usuário.</p>
+            <a href="https://www.linkedin.com/in/integrante2" class="linkedin" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="integrante">
+            <h2>Nome do Integrante 3</h2>
+            <p>Integrante 3 possui experiência em DevOps e é responsável pela implementação de soluções em nuvem.</p>
+            <a href="https://www.linkedin.com/in/integrante3" class="linkedin" target="_blank">LinkedIn</a>
+        </div>
+
+        <div class="integrante">
+            <h2>Nome do Integrante 4</h2>
+            <p>Integrante 4 trabalha na área de inteligência artificial, desenvolvendo modelos de machine learning para o projeto.</p>
+            <a href="https://www.linkedin.com/in/integrante4" class="linkedin" target="_blank">LinkedIn</a>
+        </div>
+    </div>
+</body>
+</html>
