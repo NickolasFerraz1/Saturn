@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturn</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* Variáveis CSS para facilitar a manutenção */
+        :root {
+            --primary-color: #1e88e5; /* Cor do chat-box e de outros elementos */ 
+            --secondary-color: #42a5f5; /* Cor interna do chat-box  */
+            --tertiary-color:#1c50a0;  /* Cor dos balões do usuário*/
+            --bot-color: #64b5f6; /* Cor dos balões do bot */
+            --background-gradient: linear-gradient(135deg, #0d47a1, #64b5f6); /* Gradiente de fundo */
+            --nav-gradient: linear-gradient(135deg, #1a3e8b, #266dca);
+            --text-color: #fff; /* Cor do texto */
+            --hover-color: #0d47a1; /* Cor ao passar o mouse sobre elementos */
+            --border-radius: 20px;
+            --max-bubble-width: 60%;
+            --max-bubble-width-mobile: 80%;
+            --chat-box-height: 120px;
+            --min-textarea-height: 20px;
+        }
+
+        /* Estilos Gerais */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Barra de Navegação */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 40px;
+            background: var(--nav-gradient);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .menu-right {
+            display: flex;
+            align-items: center;
+            padding: 10px 30px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /*.menu-right:hover {
+            background-color: var(--hover-color);
+        }*/
+
+        .menu-right a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        /* Container do Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+            padding: 70px 50px 80px 50px; /* Espaço para a barra de navegação */
+            box-sizing: border-box;
+            overflow-y: auto;
+            
+        }
+
+        .message-bubble {
+            background: var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            color: var(--text-color);
+            max-width: var(--max-bubble-width);
+            margin: 10px;
+            position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .user-message {
+            background: var(--tertiary-color);
+            align-self: flex-end;
+            margin-right: 50px;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: var(--bot-color);
+            align-self: flex-start;
+            margin-left: 50px;
+            margin-right: auto;
+            max-width: var(--max-bubble-width);
+        }
+
+        /* Container do Chatbox */
+        .chat-box-container {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: var(--nav-gradient);
+            padding: 10px 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            width: 90%;
+            max-width: 800px;
+            background-color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 30px;
+            transition: height 0.2s ease-in-out;
+            overflow: hidden;
+        }
+
+        .chat-box textarea {
+            flex: 1;
+            padding: 10px;
+            height: var(--min-textarea-height);
+            max-height: var(--chat-box-height);
+            border: none;
+            border-radius: 20px;
+            background: var(--secondary-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            text-align: left;
+            outline: none;
+            overflow-y: auto;
+            resize: none;
+        }
+
+        .chat-box textarea::placeholder {
+            color: #bbdefb;
+        }
+
+        /* Estilo para a barra de rolagem do chatbox */
+        .chat-box textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box textarea::-webkit-scrollbar-thumb {
+            background: #0d47a1; /* Cor do polegar da barra de rolagem */
+            border-radius: 4px;
+        }
+
+        .chat-box textarea::-webkit-scrollbar-track {
+            background: transparent; /* Cor de fundo do track da barra de rolagem */
+            border-radius: 4px;
+        }
+
+        .chat-box button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border: none;
+            border-radius: 50%;
+            background-color: #0d47a1;
+            color: var(--text-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 30px;
+            height: 30px;
+        }
+
+        .chat-box button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .chat-box button i {
+            font-size: 1rem;
+        }
+
+        /* Botão de Microfone */
+        .chat-box button#mic-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 5px;
+        }
+
+        .chat-box button#mic-btn:hover {
+            color: #bbdefb;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 100%;
+            position: fixed;
+            bottom: 50px;
+        }
+
+        footer p {
+            color: #e3f2fd;
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        /* Scrollbar personalizada para o chat */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #0d47a1;
+            border-radius: 4px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .message-bubble {
+                max-width: var(--max-bubble-width-mobile);
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .menu-right {
+                padding: 8px 20px;
+            }
+
+            .chat-box {
+                width: 90%;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Barra de Navegação -->
+    <nav>
+        <ul>
+            <li><a href="/" aria-label="Home">Home</a></li>
+            <li><a href="#" aria-label="Sobre">Sobre</a></li>
+            <!-- Removidos "Serviços" e "Contato" -->
+        </ul>
+        <div class="menu-right">
+            <img src="{{ url_for('static', filename='logo-b3-white.png') }}" alt="Logo Saturn" style="max-height: 40px;">
+        </div>
+    </nav>
+
+    <!-- Container do Chat -->
+    <div class="chat-container" id="chat-container" aria-live="polite">
+        <!-- Mensagens serão inseridas aqui dinamicamente -->
+    </div>
+
+    <!-- Container do Chatbox -->
+    <div class="chat-box-container">
+        <form class="chat-box" id="chat-box" aria-label="Caixa de envio de mensagens">
+            <!-- Botão do microfone adicionado -->
+            <button type="button" id="mic-btn" aria-label="Enviar áudio">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <textarea id="chat-input" placeholder="Digite sua mensagem aqui..." required aria-label="Campo de mensagem"></textarea>
+            <button id="send-btn" type="submit" aria-label="Enviar mensagem"><i class="fas fa-arrow-up"></i></button>
+        </form>
+    </div>
+
+
+    <!-- Elemento para passar mensagem inicial -->
+    <div id="initial-message" data-message="{{ user_message | escape }}"></div>
+
+    <script>
+        const textarea = document.getElementById('chat-input');
+        const chatBox = document.getElementById('chat-box');
+        const chatContainer = document.getElementById('chat-container');
+
+        // Função para ajustar a altura do textarea e do chat-box
+        function adjustTextareaHeight() {
+            textarea.style.height = '20px'; // Redefine a altura inicial
+            if (textarea.scrollHeight > 20) { // Ajusta apenas se o texto ultrapassar 1 linha
+                let newHeight = Math.min(textarea.scrollHeight, 120); // Define a nova altura com limite
+                textarea.style.height = `${newHeight}px`; // Aplica a nova altura ao textarea
+                chatBox.style.height = `${newHeight + 30}px`; // Ajusta a altura do chat-box
+            } else {
+                chatBox.style.height = '50px'; // Altura padrão quando não há múltiplas linhas
+            }
+        }
+
+        textarea.addEventListener('input', adjustTextareaHeight);
+
+        // Função para adicionar mensagem ao chat
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('bot-message');
+            }
+            // Usar textContent para evitar injeção de HTML
+            messageDiv.textContent = message;
+            // Substituir quebras de linha por <br> apenas se necessário
+            if (message.includes('\n')) {
+                messageDiv.innerHTML = message.replace(/\n/g, '<br>');
+            }
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTo({ 
+                top: chatContainer.scrollHeight, // Rola para a última mensagem
+                behavior: 'smooth'
+            }); 
+        }
+
+        // Função para obter resposta do chatbot
+        function fetchChatbotResponse(userMessage) {
+            // Adiciona uma mensagem de carregamento
+            addMessage("Processando sua mensagem...", 'bot'); 
+                
+            fetch('/api/chatbot', { // Altere para o endpoint do seu backend
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove a mensagem de carregamento
+                const loadingMessage = chatContainer.querySelector('.bot-message:last-child');
+                if (loadingMessage && loadingMessage.textContent === "Processando sua mensagem...") {
+                    chatContainer.removeChild(loadingMessage);
+                }
+
+                if (data.reply) {
+                    addMessage(data.reply, 'bot');
+
+                    MathJax.typesetPromise();
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                // Remove a mensagem de carregamento
+                const loadingMessage = chatContainer.querySelector('.bot-message:last-child');
+                if (loadingMessage && loadingMessage.textContent === "Processando sua mensagem...") {
+                    chatContainer.removeChild(loadingMessage);
+                }
+                addMessage("Desculpe, ocorreu um erro ao processar sua mensagem.", 'bot');
+            });
+        }
+
+        // Manipulador de envio de formulário usando async/await
+        chatBox.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const userMessage = textarea.value.trim();
+            if (userMessage === "") return;
+
+            // Adiciona a mensagem do usuário
+            addMessage(userMessage, 'user');
+
+            // Limpa o textarea e reseta a altura
+            textarea.value = "";
+            adjustTextareaHeight();
+
+            // Envia para o chatbot
+            fetchChatbotResponse(userMessage);
+        });
+
+        // Exemplo de mensagem inicial se houver
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageElement = document.getElementById('initial-message');
+            const initialMessage = messageElement.getAttribute('data-message');
+            if (initialMessage && initialMessage.trim() !== "") {
+                addMessage(initialMessage, 'user');
+                
+                // Verifica se a mensagem é a pré-programada
+                if (initialMessage === "Explore características de um fundo específico") {
+                    addMessage("Sugestões para perguntas sobre um fundo específico:\n\n1. \"Qual é o objetivo do fundo?\"\nDescubra o objetivo principal do fundo, como geração de renda ou crescimento de capital.\n\n2. \"Qual é a política de investimento do fundo?\"\nEntenda onde o fundo aplica seus recursos: ações, renda fixa, multimercado, etc.\n\n3. \"Quais são as taxas cobradas pelo fundo?\"\nPergunte sobre taxas de administração, performance e custos operacionais.\n\n4. \"Quem é o gestor do fundo e qual é o histórico dele?\"\nConheça quem está por trás das decisões de investimento e seu histórico.\n\n5. \"Quais são os riscos associados a este fundo?\"\nSaiba quais fatores podem impactar a performance e o nível de risco envolvido.\n\n6. \"Como é o desempenho histórico do fundo?\"\nExplore retornos passados, volatilidade e comportamento em diferentes períodos.\n\n7. \"Qual é a composição atual da carteira do fundo?\"\nDescubra quais ativos o fundo possui no momento e suas respectivas alocações.\n\n8. \"Quais são as condições de resgate e liquidez do fundo?\"\nPergunte sobre prazos para resgate e se há períodos de carência.\n\n9. \"Qual é o benchmark do fundo e como ele se compara?\"\nEntenda qual índice ou referência o fundo utiliza e como ele se compara.\n\n10. \"Este fundo paga dividendos? Qual é a frequência?\"\nDescubra se o fundo distribui rendimentos e como funciona a política de dividendos.", 'bot');
+                } else {
+                    // Envia para o chatbot normalmente
+                    fetchChatbotResponse(initialMessage);
+                }
+            }
+
+            // Adiciona o evento de clique ao link "Home"
+            const homeLink = document.querySelector('nav ul li a[href="index.html"]');
+            if (homeLink) {
+                homeLink.addEventListener('click', (event) => {
+                    event.preventDefault(); // Previne o comportamento padrão do link
+                    window.location.href = "index.html"; // Redireciona para o index.html
+                });
+            }
+        });
+
+        // Melhorar a usabilidade do textarea com atalhos de teclado
+        textarea.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) { // Detecta o Enter sem Shift
+                event.preventDefault(); // Impede a inserção de nova linha
+                document.getElementById('send-btn').click(); // Aciona o botão de envio
+            }
+        });
+    </script>
+</body>
+</html>
