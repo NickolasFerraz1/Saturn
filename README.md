@@ -11,7 +11,7 @@ Neste projeto foram utilizadas as seguintes tecnologias:
 Para o funcionamento deste projeto, nós utilizamos os seguintes passos:
 * Criamos a nossa base de dados local, através de um web scraping do site: https://fnet.bmfbovespa.com.br/fnet/publico/pesquisarGerenciadorDocumentosCVM?tipoFundo=1
 * Transformamos nossos arquivos extraídos do web scraping em TXT
-* Transformamos esse TXT em embeddings
+* Transformamos esse .txt em embeddings
 * Armazenamos estes embeddings no Elastic Search
 * Quando o usuário fizer a solicitação de uma informação, transformamos essa busca em embedding
 * Comparamos o embedding dessa consulta com os embeddings que temos em nosso Elastic Search
